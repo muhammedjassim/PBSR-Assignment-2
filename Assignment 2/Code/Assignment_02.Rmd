@@ -309,7 +309,7 @@ $$
 
 Following piece of code download the prices of TCS since 2007
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(quantmod)
 getSymbols('TCS.NS')
 tail(TCS.NS)
@@ -361,14 +361,39 @@ where $\mathbb{E}(\varepsilon)=0$ and $\mathbb{V}ar(\varepsilon)=\sigma^2$.
 
 1. Estimate the parameters of the models $\theta=(\alpha,\beta,\sigma)$ using the method of moments type plug-in estimator discussed in the class.
 
+```{r}
+E_tcs=mean(retrn$TCS.NS.Adjusted)
+E_nif=mean(retrn$NSEI.Adjusted)
+V_tcs=var(retrn$TCS.NS.Adjusted)
+V_nif=var(retrn$NSEI.Adjusted)
+Cov=cov(retrn$TCS.NS.Adjusted,retrn$NSEI.Adjusted)
+Beta_MOM=Cov/V_nif
+Alpha_MOM=E_tcs-Beta_MOM*E_nif
+Sigma_MOM=sqrt(V_tcs-((Beta_MOM)^2*V_nif))
+cat("Method of moments plug in estimator of theta is: (",Alpha_MOM,",",Beta_MOM,",",Sigma_MOM,")")
+```
+
 2. Estimate the parameters using the `lm` built-in function of `R`. Note that `lm` using the OLS method.
+
+```{r}
+lmpar=summary(lm(TCS.NS.Adjusted~NSEI.Adjusted,data=retrn))
+Beta_lm=lmpar$coef[2,1]
+Alpha_lm=lmpar$coef[1,1]
+Sigma_lm=lmpar$sigma
+cat("Estimator of theta using lm function is: (",Alpha_lm,",",Beta_lm,",",Sigma_lm,")")
+```
 
 3. Fill-up the following table
 
-Parameters | Method of Moments | OLS
------------|-------------------|-----
-$\alpha$   |                   |
-$\beta$    |                   |
-$\sigma$   |                   |
+Parameters| Method of Moments | OLS        |
+:--------:|:------------------|:----------:|
+$\alpha$  |    0.0004611203   |0.0004611203|
+$\beta$   |    0.7436965      |0.7436965   |
+$\sigma$  |    0.01618653     |0.01618873  |
 
 4. If the current value of Nifty is 18000 and it goes up to 18200. The current value of TCS is Rs. 3200/-. How much you can expect TCS price to go up?
+
+```{r}
+P_TCS=3200*exp(Alpha_MOM+Beta_MOM*log(18200/18000))
+cat("We can expect the TCS price to go up to",P_TCS)
+```
