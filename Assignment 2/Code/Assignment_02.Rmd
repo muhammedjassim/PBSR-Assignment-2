@@ -34,8 +34,44 @@ $$
 But we have to be careful and put proper conditions in place and modify $S$ in such a way so that it becomes proper probability distributions. 
 
 1. Figure out the necesary conditions and define the probability distribution model using $S$.
+We need the following conditions for $S$ to be a pdf:
+\begin{itemize}
+\item [1.] $0<=ar^n <=1 \forall n$.
+\item [2.] $\sum_{n=0}^{}\mathbb{P}(X=n)$ converges to 1, hence $r<1$.
+\item [3.] Since $\sum_{n=0}^{} ar^n = \frac{a}{1-r}$ and using the above, we
+have $\mathbb{P}(X=n) = (1-r)r^n$. (It is clear that = $X \sim Geom(1-r)$)
+\end{itemize}
+
 2. Check if mean and variance exists for the probability model. 
+     Yes, they exist, since we know the mean and variance of Geometric random variable.
+
 3. Can you find the analytically expression of mean and variance.
+     \begin{itemize}
+\item [1.] Mean
+\begin{align*}
+E[X] &= \sum_{n=0}n{\mathbb{P}(X=n)}\\
+     &= \sum_{n=0}n(1-r)r^n\\
+     &= r\sum_{n=0}n(1-r)r^{n-1}\\
+     &= r\sum_{n=1}(n-1)(1-r)r^{n-1} + r\sum_{n=1}(1-r)r^{n-1}\\
+     &= rE[X] + r(1-r)(\frac{1}{1-r})\\
+     &= rE[X] + r\\
+\text{Hence,}~ E[X] = \frac{r}{1-r}
+\end{align*}
+\item [2.] Variance
+\begin{align*}
+E[X^2] &= \sum_{n=0}n^2{\mathbb{P}(X=n)}\\
+     &= \sum_{n=0}n^2(1-r)r^n\\
+     &= r\sum_{n=0}n^2(1-r)r^{n-1}\\
+     &= r\sum_{n=1}(n-1)^2(1-r)r^{n-1} + \sum_{n=1}2n(1-r)r^{n} - r\sum_{n=1}(1-r)r^{n-1}\\
+     &= rE[X^2] + 2E[X] - r(1-r)\frac{1}{1-r}\\
+     &= rE[X^2] + \frac{2r}{1-r} - r\\
+\text{Hence,}~ E[X^2] = \frac{r^2 + r}{(1-r)^2}. ~\text{Therefore,}\\
+Var(X) &= E[X^2] - (E[X])^2\\
+       &= \frac{r^2 + r}{(1-r)^2} - \frac{r^2}{(1-r)^2}\\
+       &= \frac{r}{(1-r)^2}\\
+\end{align*}
+\end{itemize}
+
 4. From historical data we found the following summary statistics
 \begin{table}[ht]
 \centering
