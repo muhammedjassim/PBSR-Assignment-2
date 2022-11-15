@@ -5,6 +5,11 @@ date: "Submission Nov 16-2022 (Wednesday)"
 output: pdf_document
 ---
 
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE,warning=FALSE, message = FALSE, 
+                      fig.height = 5, fig.width = 10, fig.align = "center")
+```
+
 **Note**: Below I explain how you collaborate on `GitHub`.
 
 1. It will be group assignment. 
@@ -100,7 +105,7 @@ $$
 The mean and variance are $E(X)=\alpha\sigma$ and $Var(X)=\alpha\sigma^2$. Note that `shape = ` $\alpha$ and `scale = ` $\sigma$.
 
 1. Write a `function` in `R` which will compute the MLE of $\theta=\log(\alpha)$ using `optim` function in `R`. You can name it `MyMLE`
-```{r}
+```{r, warning=FALSE}
 MyMLE=function(obs,st){
   ls=function(params,x){
     return(sum(params[1]*log(params[2])+log(gamma(params[1])) +(x/params[2])-(params[1]-1)*log(x)))
@@ -117,7 +122,7 @@ MyMLE=function(obs,st){
      (iv) Draw histogram of the estimated MLEs of $\theta$.
      (v) Draw a vertical line using `abline` function at the true value of $\theta$.
      (vi) Use `quantile` function on estimated $\theta$'s to find the 2.5 and 97.5-percentile points. 
-     ```{r}
+```{r}
 sf<-function(n,sim_size,alpha,sigma){
 theta=c()
 for (i in 1:sim_size){
@@ -137,17 +142,14 @@ cat(cat("The 97.5th percentile is",q75[2]),sep='\n')
 cat(cat("The gap between 2.5 and 97.5 percentile points is ",q75[2]-q25[2]),sep='\n')
 }
 sf(20,1000,1.5,2.2)
-
 ```
 3.  Choose `n=40`, and `alpha=1.5` and repeat the (2).
 ```{r}
 sf(40,1000,1.5,2.2)
-
 ```
 4.  Choose `n=100`, and `alpha=1.5` and repeat the (2).
 ```{r}
 sf(100,1000,1.5,2.2)
-
 ```
 5. Check if the gap between 2.5 and 97.5-percentile points are shrinking as sample size `n` is increasing?
 The gap between 2.5 and 97.5 percentile points for n=20, n=40 and n=100 are 1.177962 , 0.819691 , 0.5194647 respectively. The gap is decreasing as n is increasing.
