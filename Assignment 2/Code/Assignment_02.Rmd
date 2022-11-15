@@ -100,6 +100,16 @@ $$
 The mean and variance are $E(X)=\alpha\sigma$ and $Var(X)=\alpha\sigma^2$. Note that `shape = ` $\alpha$ and `scale = ` $\sigma$.
 
 1. Write a `function` in `R` which will compute the MLE of $\theta=\log(\alpha)$ using `optim` function in `R`. You can name it `MyMLE`
+```{r}
+MyMLE=function(obs,st){
+  ls=function(params,x){
+    return(sum(params[1]*log(params[2])+log(gamma(params[1])) +(x/params[2])-(params[1]-1)*log(x)))
+  }
+  pars=optim(par=st,ls,x=obs)$par
+  return(log(pars[1]))
+}
+```
+
 2. Choose `n=20`, and `alpha=1.5` and `sigma=2.2`
      (i) Simulate $\{X_1,X_2,\cdots,X_n\}$ from `rgamma(n=20,shape=1.5,scale=2.2)`
      (ii) Apply the `MyMLE` to estimate $\theta$ and append the value in a vector
@@ -107,9 +117,40 @@ The mean and variance are $E(X)=\alpha\sigma$ and $Var(X)=\alpha\sigma^2$. Note 
      (iv) Draw histogram of the estimated MLEs of $\theta$.
      (v) Draw a vertical line using `abline` function at the true value of $\theta$.
      (vi) Use `quantile` function on estimated $\theta$'s to find the 2.5 and 97.5-percentile points. 
+     ```{r}
+sf<-function(n,sim_size,alpha,sigma){
+theta=c()
+for (i in 1:sim_size){
+  obs=rgamma(n=n,shape=alpha,scale=sigma)
+  theta=c(theta,MyMLE(obs,c(2,2)))
+}
+library(ggplot2)
+df_theta=as.data.frame(theta)
+val=log(1.5)
+plot<-ggplot(df_theta)+geom_histogram(aes(x=theta),fill='skyblue',color='black')+
+geom_vline(xintercept=val, color='red')+annotate("text",x=val-0.02,y=50,label=as.character(round(val,2)),angle=90)
+q25=quantile(theta,probs=seq(0,1,0.025))
+q75=quantile(theta,probs=seq(0,1,0.975))
+print(plot)
+cat(cat("The 2.5 th percentile is",q25[2]),sep='\n')
+cat(cat("The 97.5th percentile is",q75[2]),sep='\n')
+cat(cat("The gap between 2.5 and 97.5 percentile points is ",q75[2]-q25[2]),sep='\n')
+}
+sf(20,1000,1.5,2.2)
+
+```
 3.  Choose `n=40`, and `alpha=1.5` and repeat the (2).
+```{r}
+sf(40,1000,1.5,2.2)
+
+```
 4.  Choose `n=100`, and `alpha=1.5` and repeat the (2).
+```{r}
+sf(100,1000,1.5,2.2)
+
+```
 5. Check if the gap between 2.5 and 97.5-percentile points are shrinking as sample size `n` is increasing?
+The gap between 2.5 and 97.5 percentile points for n=20, n=40 and n=100 are 1.177962 , 0.819691 , 0.5194647 respectively. The gap is decreasing as n is increasing.
 
 *Hint*: Perhaps you should think of writing a single `function` where you will provide the values of `n`, `sim_size`, `alpha` and `sigma`; and it will return the desired output. 
 
