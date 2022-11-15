@@ -427,7 +427,7 @@ cat("Estimator of theta using lm function is: (",Alpha_lm,",",Beta_lm,",",Sigma_
 3. Fill-up the following table
 
 Parameters| Method of Moments | OLS        |
-:--------:|:------------------|:----------:|
+:--------:|:-----------------:|:----------:|
 $\alpha$  |    0.0004611203   |0.0004611203|
 $\beta$   |    0.7436965      |0.7436965   |
 $\sigma$  |    0.01618653     |0.01618873  |
