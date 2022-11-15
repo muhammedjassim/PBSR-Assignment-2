@@ -97,15 +97,96 @@ $$
 f(x)=p*Gamma(x|\alpha,\sigma_1)+(1-p)N(x|\mu,\sigma_2^2),~~0<p<1
 $$
 
+```{r}
+x = faithful$waiting
+mle1 = function(x, s){
+nll1 = function(x, par){
+  return (-sum(log(par[1]*dgamma(x,par[2],par[3]) + (1-par[1])*dnorm(x,par[4],par[5]))))
+}
+pars = optim(par = s, nll1, x=x, lower = c(0,0,0,-Inf,0), upper=c(1,Inf,Inf,Inf,Inf), method = 'L-BFGS-B')$par
+cat(cat('The optimal values of p, alpha, sigma_1, mu, sigma_2 is', pars),sep='\n')
+cat('AIC =', 2*nll1(x, pars) + 2*length(pars))
+return (pars)
+}
+pars = mle1(x,c(0.5,55,1,85,1))
+```
+
+```{r}
+x = seq(40,100,length.out=10000)
+f=function(x, par){
+  return (par[1]*dgamma(x,par[2],par[3]) + (1-par[1])*dnorm(x,par[4],par[5]))
+}
+hist(faithful$waiting,xlab = 'waiting',probability = T,col='lightpink',main='')
+lines(x,f(x,pars), col = 'red',lwd=2)
+```
+
 (ii) **Model 2**:
 $$
 f(x)=p*Gamma(x|\alpha_1,\sigma_1)+(1-p)Gamma(x|\alpha_2,\sigma_2),~~0<p<1
 $$
 
+```{r}
+x = faithful$waiting
+mle2 = function(x, s){
+nll2 = function(x, par){
+  return (-sum(log(par[1]*dgamma(x,par[2],par[3]) + (1-par[1])*dgamma(x,par[4],par[5]))))
+}
+pars = optim(par = s, nll2, x=x, lower = c(0,0,0,0,0), upper=c(1,Inf,Inf,Inf,Inf), method = 'L-BFGS-B')$par
+cat(cat('The optimal values of p, alpha, sigma_1, mu. sigma_2 is', pars),sep='\n')
+cat('AIC =', 2*nll2(x, pars) + 2*length(pars))
+return (pars)
+}
+pars = mle2(x,c(0.5,55,1,85,1))
+```
+
+```{r}
+x = seq(40,100,length.out=10000)
+f=function(x, par){
+  return (par[1]*dgamma(x,par[2],par[3]) + (1-par[1])*dgamma(x,par[4],par[5]))
+}
+hist(faithful$waiting,xlab = 'waiting',probability = T,col='lightpink',main='')
+lines(x,f(x,pars), col = 'red',lwd=2)
+```
+
 (iii) **Model 3**:
 $$
 f(x)=p*logNormal(x|\mu_1,\sigma_1^2)+(1-p)logNormal(x|\mu_1,\sigma_1^2),~~0<p<1
 $$
+
+```{r}
+x = faithful$waiting
+mle3 = function(x, s){
+nll3 = function(x, par){
+  return (-sum(log(par[1]*dlnorm(x,par[2],par[3]) + (1-par[1])*dlnorm(x,par[4],par[5]))))
+}
+pars = optim(par = s, nll3, x=x, lower = c(0,-Inf,0,-Inf,0), upper=c(1,Inf,Inf,Inf,Inf), method = 'L-BFGS-B')$par
+cat(cat('The optimal values of p, alpha, sigma_1, mu. sigma_2 is', pars),sep='\n')
+cat('AIC =', 2*nll3(x, pars) + 2*length(pars))
+return (pars)
+}
+pars = mle3(x,c(0.5,4,1,4.4,1))
+```
+
+```{r}
+x = seq(40,100,length.out=10000)
+f=function(x, par){
+  return (par[1]*dlnorm(x,par[2],par[3]) + (1-par[1])*dlnorm(x,par[4],par[5]))
+}
+hist(faithful$waiting,xlab = 'waiting',probability = T,col='lightpink',main='')
+lines(x,f(x,pars), col = 'red',lwd=2)
+```
+The AIC values for the three models are 2076.18, 2076.116 and 2075.42 respectively. Since model 3 has least value of AIC, it is considered as the best fit.
+
+$$
+P(60 < waiting < 70) = P(X < 70) - P(X < 60)
+$$
+$$
+\text{Where X has pdf in Model 3}
+$$
+
+```{r}
+pars[1] * (plnorm(70, pars[2], pars[3]) - plnorm(60, pars[2], pars[3])) + (1 - pars[1]) * (plnorm(70, pars[4], pars[5]) - plnorm(60, pars[4], pars[5]))
+```
 
 \newpage
 
