@@ -46,30 +46,30 @@ have $\mathbb{P}(X=n) = (1-r)r^n$. (It is clear that = $X \sim Geom(1-r)$)
      Yes, they exist, since we know the mean and variance of Geometric random variable.
 
 3. Can you find the analytically expression of mean and variance.
-     \begin{itemize}
+\begin{itemize}
 \item [1.] Mean
-\begin{align*}
-E[X] &= \sum_{n=0}n{\mathbb{P}(X=n)}\\
-     &= \sum_{n=0}n(1-r)r^n\\
-     &= r\sum_{n=0}n(1-r)r^{n-1}\\
-     &= r\sum_{n=1}(n-1)(1-r)r^{n-1} + r\sum_{n=1}(1-r)r^{n-1}\\
-     &= rE[X] + r(1-r)(\frac{1}{1-r})\\
-     &= rE[X] + r\\
-\text{Hence,}~ E[X] = \frac{r}{1-r}
-\end{align*}
+\begin{eqnarray*}
+E[X] & = & \sum_{n=0}n{\mathbb{P}(X=n)}\\
+     & = & \sum_{n=0}n(1-r)r^n\\
+     & = & r\sum_{n=0}n(1-r)r^{n-1}\\
+     & = & r\sum_{n=1}(n-1)(1-r)r^{n-1} + r\sum_{n=1}(1-r)r^{n-1}\\
+     & = & rE[X] + r(1-r)(\frac{1}{1-r})\\
+     & = & rE[X] + r\\
+\Rightarrow E[X] & = & \frac{r}{1-r}
+\end{eqnarray*}
 \item [2.] Variance
-\begin{align*}
-E[X^2] &= \sum_{n=0}n^2{\mathbb{P}(X=n)}\\
-     &= \sum_{n=0}n^2(1-r)r^n\\
-     &= r\sum_{n=0}n^2(1-r)r^{n-1}\\
-     &= r\sum_{n=1}(n-1)^2(1-r)r^{n-1} + \sum_{n=1}2n(1-r)r^{n} - r\sum_{n=1}(1-r)r^{n-1}\\
-     &= rE[X^2] + 2E[X] - r(1-r)\frac{1}{1-r}\\
-     &= rE[X^2] + \frac{2r}{1-r} - r\\
-\text{Hence,}~ E[X^2] = \frac{r^2 + r}{(1-r)^2}. ~\text{Therefore,}\\
-Var(X) &= E[X^2] - (E[X])^2\\
-       &= \frac{r^2 + r}{(1-r)^2} - \frac{r^2}{(1-r)^2}\\
-       &= \frac{r}{(1-r)^2}\\
-\end{align*}
+\begin{eqnarray*}
+E[X^2] & = & \sum_{n=0}n^2{\mathbb{P}(X=n)}\\
+     & = & \sum_{n=0}n^2(1-r)r^n\\
+     & = & r\sum_{n=0}n^2(1-r)r^{n-1}\\
+     & = & r\sum_{n=1}(n-1)^2(1-r)r^{n-1} + \sum_{n=1}2n(1-r)r^{n} - r\sum_{n=1}(1-r)r^{n-1}\\
+     & = & rE[X^2] + 2E[X] - r(1-r)\frac{1}{1-r}\\
+     & = & rE[X^2] + \frac{2r}{1-r} - r\\
+\Rightarrow E[X^2] & = & \frac{r^2 + r}{(1-r)^2}.\\
+\text{Therefore,}\ Var(X) & = & E[X^2] - (E[X])^2\\
+       & = & \frac{r^2 + r}{(1-r)^2} - \frac{r^2}{(1-r)^2}\\
+       & = & \frac{r}{(1-r)^2}\\
+\end{eqnarray*}
 \end{itemize}
 
 4. From historical data we found the following summary statistics
