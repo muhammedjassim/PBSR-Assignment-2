@@ -1,7 +1,11 @@
 ---
 title: "**Probability and Statistics with R**"
-author: "**Assignment 2**"
-date: "Submission Nov 16-2022 (Wednesday)"
+subtitle: "**Assignment 2**"
+author:
+  - Muhammed Jassim
+  - Anusha R
+  - Narendran Ramakrishnan
+date: "16 November, 2022"
 output: pdf_document
 ---
 
