@@ -86,14 +86,88 @@ E[X^2] & = & \sum_{n=0}n^2{\mathbb{P}(X=n)}\\
      \end{tabular}
 \end{table}
 Using the summary statistics and your newly defined probability distribution model find the following:
+\pagebreak
+
+\begin{itemize}
+
+\item The above summary statistics do not seem to follow from a Geimetric distribution since if we assume mean is true and solve for r, the variance is incorrect, and vice versa. But for this question, we will model our parameters using the mean. So if $\frac{r}{1-r} = 1.5$, then $r = 0.6$, meaning that our model has a variance of 3.5
+
+\end{itemize}
+
  a. What is the probability that home team will score at least one goal?
+ 
+ Ans.
+ 
+\begin{eqnarray*}
+\mathbb{P}(\text{atleast one goal}) & = & 1 - \mathbb{P}(\text{no goal})\\
+                                    & = & 1 - (1-r)\\
+                                    & = & r\\
+                                    & = & 0.6\\
+\end{eqnarray*}
+ 
  b. What is the probability that home team will score at least one goal but less than four goal?
+ 
+ Ans.
+ 
+\begin{eqnarray*}
+\mathbb{P}(1<=X<4) & = & \sum_{i=1}^{3} \mathbb{P}(X=i)\\
+                   & = & \sum_{i=1}^{3} (1-r)r^i\\
+                   & = & r(1-r^3)\\
+                   & = & 0.47\\
+\end{eqnarray*}
 
 5. Suppose on another thought you want to model it with off-the shelf Poisson probability models. Under the assumption that underlying distribution is Poisson probability find the above probabilities, i.e.,
+
+\begin{itemize}
+\item Once again, we will model it using the mean as parameter. The given summary statistics cannot be that of a Poisson distribution, since it has unequal mean and variance, but like in the previous question, we will assume mean is correct and hence, $\lambda = 1.5$. So, $\mathbb{P}(X=n) = \frac{e^{-\lambda}\lambda^n}{n!}$.
+\end{itemize}
+
  a. What is the probability that home team will score at least one goal?
+ 
+ Ans.
+ 
+ \begin{eqnarray*}
+ \mathbb{P}(\text{atleast one goal}) & = & 1 - \mathbb{P}(\text{no goal})\\
+                                     & = & 1 - e^{-\lambda}\\
+                                     & = & 0.77\\
+ \end{eqnarray*}
+ \pagebreak
+ 
  b. What is the probability that home team will score at least one goal but less than four goal?
+ 
+ Ans.
+ 
+ \begin{eqnarray*}
+ \mathbb{P}(1<=X<4) & = & \sum_{i=1}^{3} \mathbb{P}(X=i)\\
+                    & = & \sum_{i=1}^{3} \frac{e^{-\lambda}\lambda^i}{i!}\\
+                    & = & 0.758\\
+ \end{eqnarray*}
 6. Which probability model you would prefer over another?
+
+Ans.
+
+\begin{table}[ht]
+\centering
+     \begin{tabular}{c|c|c|c}\hline
+     Model & Mean &  Median & Variance\\ \hline
+     Expected & 1.5 & 1 & 2.25 \\ \hline
+     Geometric & 1.5 & 2 & 3.5\\ \hline
+     Poisson & 1.5 & 1 & 1.5\\ \hline
+     \end{tabular}
+\end{table}
+
+\begin{itemize}
+\item Poisson has the least variance and also seems to have central tendencies closer to the expected values, hence it could be a better fit.
+\end{itemize}
+
 7. Write down the likelihood functions of your newly defined probability models and Poisson models. Clearly mention all the assumptions that you are making.
+
+Ans.
+
+\begin{itemize}
+\item [(a)] $\mathcal{L}(r|(x_1,x_2,..,x_n)) = \Pi_{i}(1-r)r^{x_i} = (1-r)r^{\sum_{}^{}x_i}$
+\item [(b)] $\mathcal{L}(\lambda|(x_1,x_2,..,x_n)) = \Pi_{i=1}^{n}\frac{e^{-\lambda}\lambda^{x_i}}{x_i!} = \frac{e^{-n\lambda}\lambda^{\sum_{i=1}^{n}x_i}}{\Pi_{i=1}^{n}x_i!}$
+\end{itemize}
 
 ## Problem 2 : Simulation Study to Understand Sampling Distribution
 
