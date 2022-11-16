@@ -168,6 +168,7 @@ Ans.
 \item [(a)] $\mathcal{L}(r|(x_1,x_2,..,x_n)) = \Pi_{i}(1-r)r^{x_i} = (1-r)r^{\sum_{}^{}x_i}$
 \item [(b)] $\mathcal{L}(\lambda|(x_1,x_2,..,x_n)) = \Pi_{i=1}^{n}\frac{e^{-\lambda}\lambda^{x_i}}{x_i!} = \frac{e^{-n\lambda}\lambda^{\sum_{i=1}^{n}x_i}}{\Pi_{i=1}^{n}x_i!}$
 \end{itemize}
+\pagebreak
 
 ## Problem 2 : Simulation Study to Understand Sampling Distribution
 
@@ -226,9 +227,7 @@ sf(40,1000,1.5,2.2)
 sf(100,1000,1.5,2.2)
 ```
 5. Check if the gap between 2.5 and 97.5-percentile points are shrinking as sample size `n` is increasing?
-The gap between 2.5 and 97.5 percentile points for n=20, n=40 and n=100 are 1.177962 , 0.819691 , 0.5194647 respectively. The gap is decreasing as n is increasing.
-
-*Hint*: Perhaps you should think of writing a single `function` where you will provide the values of `n`, `sim_size`, `alpha` and `sigma`; and it will return the desired output. 
+**Ans**. The gap between 2.5 and 97.5 percentile points for n=20, n=40 and n=100 are 1.177962 , 0.819691 , 0.5194647 respectively. The gap is decreasing as n is increasing.
 
 \newpage
 
@@ -386,6 +385,35 @@ $$
 (i) Clearly write down the negative-log-likelihood function in `R`. Then use `optim` function to estimate MLE of $\theta=(\beta_0,\beta_1,\sigma)$
 (ii) Calculate **Bayesian Information Criterion** (BIC) for the model.
 
+```{r}
+data = Insurance[,c('Holders','Claims')]
+n=nrow(data)
+Norm = function(p0){
+  NLL = function(x,par){
+    mean = with(x, par[1]+par[2]*Holders)
+     f1 = function(x,mean,sigma){
+       return ((exp(-0.5*((x-mean)^2/(sigma^2))))/(sigma*sqrt(2*pi)))
+     }
+     LL = c()
+     for (i in 1:n){
+       LL = c(LL, f1(x[i,'Claims'],mean[i],par[3]))
+     }
+     return (-sum(log(LL)))
+  }
+ fit=optim(par=p0,NLL,x=data)
+  cat(cat("MLE=",fit$par),sep="\n")
+  BIC = 3*log(n)+2*fit$value
+  cat("BIC =",BIC)
+  return(fit$par)
+}
+pars = Norm(c(0,0.1,100))
+plot(Insurance$Holders,Insurance$Claims ,xlab = 'Holders',ylab='Claims',pch=20)
+x = seq(0,4000,length.out=10000)
+lines(x,pars[1]+pars[2]*x,col='red')
+grid()
+```
+
+
 **Part B**: Now we want to fit the same model with change in distribution:
 $$
 \texttt{Claims}_i=\beta_0 + \beta_1~\texttt{Holders}_i + \varepsilon_i,~~~i=1,2,\cdots,n
@@ -395,6 +423,33 @@ $$
 (i) Clearly write down the negative-log-likelihood function in `R`. Then use `optim` function to estimate MLE of $\theta=(\beta_0,\beta_1,\sigma)$
 
 (ii) Calculate **Bayesian Information Criterion** (BIC) for the model.
+
+```{r}
+n=nrow(data)
+Lapl = function(p0){
+  NLL = function(x,par){
+    mean = with(x, par[1]+par[2]*Holders)
+     f2 = function(x,mean,sigma){
+      return ((exp(-(abs(x-mean)/(sigma))))/(2*sigma))
+    }
+     LL = c()
+     for (i in 1:n){
+       LL = c(LL, f2(x[i,'Claims'],mean[i],par[3]))
+     }
+     return (-sum(log(LL)))
+  }
+ fit=optim(par=p0,NLL,x=data)
+  cat(cat("MLE=",fit$par),sep="\n")
+  BIC = 3*log(n)+2*fit$value
+  cat("BIC =",BIC)
+  return(fit$par)
+}
+pars = Lapl(c(0,0.1,100))
+plot(Insurance$Holders,Insurance$Claims ,xlab = 'Holders',ylab='Claims',pch=20)
+x = seq(0,4000,length.out=10000)
+lines(x,pars[1]+pars[2]*x,col='red')
+grid()
+```
 
 **Part C**: We want to fit the following models:
 $$
@@ -410,6 +465,35 @@ Note that $\beta_0,\beta_1 \in\mathbb{R}$ and $\sigma \in \mathbb{R}^{+}$.
 
 (ii) Calculate **Bayesian Information Criterion** (BIC) for the model.
 
+Note that we have one point in our data set where `Claims`=0. Since the support of Lognormal distribution is (0,$\infty$), we remove this point.
+
+```{r}
+C = function(p0){
+  NLL = function(x,par){
+    mu = with(x, par[1]+par[2]*Holders)
+    f3 = function(x,mu,sigma){
+      return ((exp(-0.5*((log(x)-mu)^2/(sigma^2))))/(x*sigma*sqrt(2*pi)))
+    }
+    LL = c()
+    for (i in 1:63){
+      LL = c(LL, f3(x[i,'Claims'],mu[i],par[3]))
+    }
+    return (-sum(log(LL)))
+  }
+  data1 = data[data["Claims"]!=0,]
+  fit = optim(par=p0,NLL,x=data1)
+  cat(cat("Optimal parameters are",fit$par),sep="\n")
+  BIC = 3*log(64)+2*fit$value
+  cat("The BIC for this model",BIC)
+  return(fit$par)
+}
+pars = C(c(0,0.0001,0.3))
+plot(Insurance$Holders,Insurance$Claims ,xlab = 'Holders',ylab='Claims',pch=20)
+x = seq(0,4000,length.out=10000)
+lines(x,pars[1]+pars[2]*x,col='red')
+grid()
+```
+
 **Part D**: We want to fit the following models:
 $$
 \texttt{Claims}_i\sim Gamma(\alpha_i,\sigma), where
@@ -418,9 +502,37 @@ $$
 log(\alpha_i)=\beta_0 + \beta_1 \log(\texttt{Holders}_i), ~~i=1,2,...,n
 $$
 
-
+```{r}
+D = function(p0){
+  NLL = function(x,par){
+    alpha = with(x, exp(par[1]+par[2]*log(Holders)))
+    f4 = function(x,alpha,sigma){
+      return ((exp(-x/sigma)*x^(alpha-1))/((sigma^alpha)*gamma(alpha)))
+    }
+    LL = c()
+    for (i in 1:64){
+      LL = c(LL, f4(x[i,'Claims'],alpha[i],par[3]))
+    }
+    return (-sum(log(LL)))
+  }
+  fit = optim(par=p0,NLL,x=data)
+  cat(cat("Optimal parameters are",fit$par),sep="\n")
+  BIC = 3*log(64)+2*fit$value
+  cat("The BIC for this model",BIC)
+  return(fit$par)
+}
+pars = D(c(0,0,45))
+plot(Insurance$Holders,Insurance$Claims ,xlab = 'Holders',ylab='Claims',pch=20)
+x = seq(0,4000,length.out=10000)
+lines(x,pars[1]+pars[2]*x,col='red')
+grid()
+```
 
 (iii) Compare the BIC of all three models
+
+*Ans*. The BIC of the models are 510.76, 498.69, 568.02 and 639.24 respectively. Since the number of parameters being estimated are the same in all cases (3), lower the BIC, higher the likelihood and hence better the model. Based on this remark, the second model, i.e., $\epsilon_i \sim \text{Laplace}(0,\sigma^2)$ is the best fit for the data. The Gauss-Markov assumptions ($\epsilon_i \sim \mathcal{N}(0,\sigma^2)$) follow closely as the second best model. The 4th model ($\epsilon_i \sim \Gamma(0,\sigma^2)$) fits the worst.
+
+\pagebreak
 
 ## Problem 5: Computational Finance - Modelling Stock prices
 
