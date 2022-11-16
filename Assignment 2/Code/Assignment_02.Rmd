@@ -1,7 +1,7 @@
 ---
 title: "**Probability and Statistics with R**"
 subtitle: "**Assignment 2**"
-author:
+author: 
   - Muhammed Jassim
   - Anusha R
   - Narendran Ramakrishnan
@@ -348,7 +348,7 @@ pars[1] * (plnorm(70, pars[2], pars[3]) - plnorm(60, pars[2], pars[3])) + (1 - p
 
 ## Problem 4: Modelling Insurance Claims
 
-Consider the `Insurance` datasets in the `MASS` package. The data given in data frame `Insurance` consist of the numbers of policyholders of an insurance company who were exposed to risk, and the numbers of car insurance claims made by those policyholders in the third quarter of 1973.
+Consider the `Insurance` data sets in the `MASS` package. The data given in data frame `Insurance` consist of the numbers of policyholders of an insurance company who were exposed to risk, and the numbers of car insurance claims made by those policyholders in the third quarter of 1973.
 
 This data frame contains the following columns:
 
@@ -364,6 +364,8 @@ This data frame contains the following columns:
 
 ```{r}
 library(MASS)
+attach(Insurance)
+data = Insurance[,c('Holders','Claims')]
 plot(Insurance$Holders,Insurance$Claims
      ,xlab = 'Holders',ylab='Claims',pch=20)
 grid()
@@ -389,28 +391,27 @@ $$
 (i) Clearly write down the negative-log-likelihood function in `R`. Then use `optim` function to estimate MLE of $\theta=(\beta_0,\beta_1,\sigma)$
 (ii) Calculate **Bayesian Information Criterion** (BIC) for the model.
 
+
 ```{r}
-data = Insurance[,c('Holders','Claims')]
-n=nrow(data)
-Norm = function(p0){
+A = function(p0){
   NLL = function(x,par){
-    mean = with(x, par[1]+par[2]*Holders)
-     f1 = function(x,mean,sigma){
-       return ((exp(-0.5*((x-mean)^2/(sigma^2))))/(sigma*sqrt(2*pi)))
-     }
-     LL = c()
-     for (i in 1:n){
-       LL = c(LL, f1(x[i,'Claims'],mean[i],par[3]))
-     }
-     return (-sum(log(LL)))
+    mu = with(x, par[1]+par[2]*Holders)
+    f1 = function(x,mu,sigma){
+      return ((exp(-0.5*((x-mu)^2/(sigma^2))))/(sigma*sqrt(2*pi)))
+    }
+    LL = c()
+    for (i in 1:64){
+      LL = c(LL, f1(x[i,'Claims'],mu[i],par[3]))
+    }
+    return (-sum(log(LL)))
   }
- fit=optim(par=p0,NLL,x=data)
-  cat(cat("MLE=",fit$par),sep="\n")
-  BIC = 3*log(n)+2*fit$value
-  cat("BIC =",BIC)
+  fit = optim(par=p0,NLL,x=data)
+  cat(cat("Optimal parameters are",fit$par),sep="\n")
+  BIC = 3*log(64)+2*fit$value
+  cat("The BIC for this model",BIC)
   return(fit$par)
 }
-pars = Norm(c(0,0.1,100))
+pars = A(c(0,0.1,10))
 plot(Insurance$Holders,Insurance$Claims ,xlab = 'Holders',ylab='Claims',pch=20)
 x = seq(0,4000,length.out=10000)
 lines(x,pars[1]+pars[2]*x,col='red')
@@ -429,31 +430,31 @@ $$
 (ii) Calculate **Bayesian Information Criterion** (BIC) for the model.
 
 ```{r}
-n=nrow(data)
-Lapl = function(p0){
+B = function(p0){
   NLL = function(x,par){
-    mean = with(x, par[1]+par[2]*Holders)
-     f2 = function(x,mean,sigma){
-      return ((exp(-(abs(x-mean)/(sigma))))/(2*sigma))
+    mu = with(x, par[1]+par[2]*Holders)
+    f2 = function(x,mu,sigma){
+      return ((exp(-(abs(x-mu)/(sigma))))/(2*sigma))
     }
-     LL = c()
-     for (i in 1:n){
-       LL = c(LL, f2(x[i,'Claims'],mean[i],par[3]))
-     }
-     return (-sum(log(LL)))
+    LL = c()
+    for (i in 1:64){
+      LL = c(LL, f2(x[i,'Claims'],mu[i],par[3]^2))
+    }
+    return (-sum(log(LL)))
   }
- fit=optim(par=p0,NLL,x=data)
-  cat(cat("MLE=",fit$par),sep="\n")
-  BIC = 3*log(n)+2*fit$value
-  cat("BIC =",BIC)
+  fit = optim(par=p0,NLL,x=data)
+  cat(cat("Optimal parameters are",fit$par),sep="\n")
+  BIC = 3*log(64)+2*fit$value
+  cat("The BIC for this model",BIC)
   return(fit$par)
 }
-pars = Lapl(c(0,0.1,100))
+pars = B(c(0,0.1,10))
 plot(Insurance$Holders,Insurance$Claims ,xlab = 'Holders',ylab='Claims',pch=20)
 x = seq(0,4000,length.out=10000)
 lines(x,pars[1]+pars[2]*x,col='red')
 grid()
 ```
+
 
 **Part C**: We want to fit the following models:
 $$
@@ -498,6 +499,7 @@ lines(x,pars[1]+pars[2]*x,col='red')
 grid()
 ```
 
+
 **Part D**: We want to fit the following models:
 $$
 \texttt{Claims}_i\sim Gamma(\alpha_i,\sigma), where
@@ -505,7 +507,6 @@ $$
 $$
 log(\alpha_i)=\beta_0 + \beta_1 \log(\texttt{Holders}_i), ~~i=1,2,...,n
 $$
-
 ```{r}
 D = function(p0){
   NLL = function(x,par){
@@ -532,11 +533,13 @@ lines(x,pars[1]+pars[2]*x,col='red')
 grid()
 ```
 
-(iii) Compare the BIC of all three models
-
-*Ans*. The BIC of the models are 510.76, 498.69, 568.02 and 639.24 respectively. Since the number of parameters being estimated are the same in all cases (3), lower the BIC, higher the likelihood and hence better the model. Based on this remark, the second model, i.e., $\epsilon_i \sim \text{Laplace}(0,\sigma^2)$ is the best fit for the data. The Gauss-Markov assumptions ($\epsilon_i \sim \mathcal{N}(0,\sigma^2)$) follow closely as the second best model. The 4th model ($\epsilon_i \sim \Gamma(0,\sigma^2)$) fits the worst.
+\begin{itemize}
+\item[Q] Compare the BIC of all three models.
+\item[A] The BIC of the models are 510.76, 498.69, 568.02 and 639.24 respectively. Since the number of parameters being estimated are the same in all cases (3), lower the BIC, higher the likelihood and hence better the model. Based on this remark, the second model, i.e., $\epsilon_i \sim \text{Laplace}(0,\sigma^2)$ is the best fit for the data. The Gauss-Markov assumptions ($\epsilon_i \sim \mathcal{N}(0,\sigma^2)$) follow closely as the second best model. The 4th model ($\epsilon_i \sim \Gamma(0,\sigma^2)$) fits the worst.
+\end{itemize}
 
 \pagebreak
+
 
 ## Problem 5: Computational Finance - Modelling Stock prices
 
